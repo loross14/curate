@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --accent: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.3);
+  --card-bg: #141414;
+  --card-border: #2a2a2a;
+  --skip-red: #ef4444;
+  --ship-green: #22c55e;
+  --edit-amber: #f59e0b;
 }
 
 @theme inline {
@@ -12,15 +19,71 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  overflow: hidden;
+  height: 100dvh;
+  -webkit-user-select: none;
+  user-select: none;
 }
+
+/* Swipe animations */
+@keyframes swipeRight {
+  to {
+    transform: translateX(150%) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes swipeLeft {
+  to {
+    transform: translateX(-150%) rotate(-20deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(40px) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 60px rgba(99, 102, 241, 0.15); }
+}
+
+.swipe-right {
+  animation: swipeRight 0.4s ease-out forwards;
+}
+
+.swipe-left {
+  animation: swipeLeft 0.4s ease-out forwards;
+}
+
+.card-enter {
+  animation: fadeInUp 0.35s ease-out;
+}
+
+.glow-pulse {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Virality score ring */
+.score-ring {
+  background: conic-gradient(
+    var(--accent) calc(var(--score) * 1%),
+    #2a2a2a calc(var(--score) * 1%)
+  );
+}
+
+/* Scrollbar hide */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
