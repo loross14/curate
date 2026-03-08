@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import { Clip } from "./clips";
 import { CampaignWithClips } from "./campaigns";
 import { fetchCampaignBySlug } from "./data";
+import { supabase } from "./supabase";
+
+const HARDCODED_USER_ID = "00000000-0000-0000-0000-000000000001";
 
 interface ReviewSession {
   campaign: CampaignWithClips | null;
@@ -39,6 +42,49 @@ export function useReviewSession(slug: string): ReviewSession {
   const currentClip = clips[currentIndex];
   const remaining = clips.length - currentIndex;
   const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sessionIdRef = useRef<string | null>(null);
+
+  // Create a session in Supabase when clips load successfully
+  useEffect(() => {
+    if (!campaign || clips.length === 0 || sessionIdRef.current) return;
+
+    supabase
+      .from("sessions")
+      .insert({
+        campaign_id: campaign.id,
+        user_id: HARDCODED_USER_ID,
+        status: "active",
+        total_clips: clips.length,
+      })
+      .select("id")
+      .single()
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Failed to create session:", error);
+          return;
+        }
+        sessionIdRef.current = data.id;
+      });
+  }, [campaign, clips.length]);
+
+  // Complete session when all clips are reviewed
+  useEffect(() => {
+    if (!done || !sessionIdRef.current) return;
+
+    const sessionId = sessionIdRef.current;
+    supabase
+      .from("sessions")
+      .update({
+        status: "completed",
+        completed_at: new Date().toISOString(),
+        shipped: shipped.length,
+        skipped: skipped.length,
+      })
+      .eq("id", sessionId)
+      .then(({ error }) => {
+        if (error) console.error("Failed to complete session:", error);
+      });
+  }, [done, shipped.length, skipped.length]);
 
   useEffect(() => {
     fetchCampaignBySlug(slug).then((data) => {
@@ -67,25 +113,46 @@ export function useReviewSession(slug: string): ReviewSession {
     }, 400);
   }, []);
 
+  const saveDecision = useCallback((clip: Clip, decision: "ship" | "skip") => {
+    if (!sessionIdRef.current || !campaign) return;
+    // Fire-and-forget — don't block the UI
+    supabase
+      .from("decisions")
+      .insert({
+        session_id: sessionIdRef.current,
+        clip_id: clip.id,
+        campaign_id: campaign.id,
+        user_id: HARDCODED_USER_ID,
+        decision,
+      })
+      .then(({ error }) => {
+        if (error) console.error("Failed to save decision:", error);
+      });
+  }, [campaign]);
+
   const handleShip = useCallback(() => {
     if (swipeDirection || !currentClip) return;
     setShipped((prev) => [...prev, currentClip]);
     setSwipeDirection("right");
+    saveDecision(currentClip, "ship");
     advanceClip();
-  }, [currentClip, swipeDirection, advanceClip]);
+  }, [currentClip, swipeDirection, advanceClip, saveDecision]);
 
   const handleSkip = useCallback(() => {
     if (swipeDirection || !currentClip) return;
     setSkipped((prev) => [...prev, currentClip]);
     setSwipeDirection("left");
+    saveDecision(currentClip, "skip");
     advanceClip();
-  }, [currentClip, swipeDirection, advanceClip]);
+  }, [currentClip, swipeDirection, advanceClip, saveDecision]);
 
   const handleBack = useCallback(() => {
     router.push(`/campaigns/${slug}`);
   }, [router, slug]);
 
   const handleNewSession = useCallback(() => {
+    // Reset session ID so a new one is created
+    sessionIdRef.current = null;
     setCurrentIndex(0);
     setShipped([]);
     setSkipped([]);

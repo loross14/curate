@@ -46,3 +46,30 @@ All UI text is lowercase. No title case, no sentence case. Examples: "session co
 ## Seed Data
 38 clips from 20 Moon or Bust episodes. Birbathon campaign exists as draft with strategy but no clips yet.
 Re-seed: `npx tsx scripts/seed.ts`
+
+## Auth (Google OAuth)
+- Code is built: `src/lib/auth.ts`, `src/lib/AuthContext.tsx`, `src/components/AuthGuard.tsx`, `src/app/login/page.tsx`
+- **Currently disabled**: `AUTH_ENABLED = false` in AuthGuard.tsx
+- Google Cloud project created: `curate-app-prod` (project ID)
+- **BLOCKER**: OAuth consent screen must be configured via Google Cloud Console UI (no API for personal accounts)
+- URL: `https://console.cloud.google.com/apis/credentials/consent?project=curate-app-prod`
+- After consent screen: create OAuth client, add redirect URI `https://ovqndmutzpoqysozcwph.supabase.co/auth/v1/callback`
+- Then paste client ID + secret into Supabase Google provider settings
+- Then add `https://curate-xi.vercel.app` and `http://localhost:3000` as redirect URLs in Supabase URL Configuration
+- Flip `AUTH_ENABLED = true` and redeploy
+
+## MVP Scope
+Product is a content strategy + campaign management tool, not just a clipping tool. Campaigns contain content deliverables (clips, but extensible to other formats).
+
+Build order: auth → persistent decisions → campaign creation → publish queue → taste profiles
+
+- **Auth**: Google OAuth (code done, config pending)
+- **Decisions**: ship/skip saved to Supabase `decisions` table per session
+- **Campaign creation**: paste URL → Gemini extracts → review/edit before adding
+- **Publish queue**: tracking + export (CSV/JSON), no API integrations
+- **Taste profiles**: per existing schema
+
+## Design Principles
+- Campaign cards are minimal: name, description, "view campaign" CTA. No clip-specific stats on the home page.
+- All campaigns show on dashboard regardless of clip count — Birbathon (0 clips) is valid, it just needs clips generated.
+- Home page is a campaign launcher, not a command center. Detail lives on the hero page.
