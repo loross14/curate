@@ -465,8 +465,16 @@ function makeUUID(ns: string, key: string): string {
 async function seed() {
   console.log("Seeding CURATE database...\n");
 
-  // 1. Create user via auth (or just use the fixed UUID)
+  // 1. Insert user
   const userId = USER.id;
+  const { error: userError } = await supabase
+    .from("users")
+    .upsert({ id: userId, email: USER.email, name: "Logan Ross" }, { onConflict: "id" });
+  if (userError) {
+    console.log("User insert error:", userError);
+    return;
+  }
+  console.log("User inserted.");
 
   // 2. Insert campaigns
   const campaigns = [
@@ -541,11 +549,11 @@ async function seed() {
       id: makeUUID("source", ytId),
       campaign_id: mobCampaignId,
       user_id: userId,
-      source_type: "youtube",
+      source_type: "youtube_video",
       source_url: `https://www.youtube.com/watch?v=${ytId}`,
       title: episode,
       episode_number: episodeNumber,
-      pipeline_status: "completed",
+      pipeline_status: "ready",
       metadata: {
         youtube_id: ytId,
         episode_date: date,
