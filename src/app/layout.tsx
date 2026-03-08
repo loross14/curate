@@ -13,8 +13,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CURATE",
-  description: "Campaign Creator",
+  title: {
+    default: "CURATE — Campaign Creator",
+    template: "%s | CURATE",
+  },
+  description: "Turn long-form content into ship-ready clips. AI extracts, you curate.",
+  metadataBase: new URL("https://curate-xi.vercel.app"),
+  openGraph: {
+    type: "website",
+    siteName: "CURATE",
+    title: "CURATE — Campaign Creator",
+    description: "Turn long-form content into ship-ready clips. AI extracts, you curate.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CURATE — Campaign Creator",
+    description: "Turn long-form content into ship-ready clips. AI extracts, you curate.",
+  },
 };
 
 export const viewport: Viewport = {

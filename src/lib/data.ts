@@ -90,6 +90,22 @@ export async function fetchCampaignBySlug(slug: string): Promise<CampaignWithCli
   return { ...campaign, clips };
 }
 
+// Lightweight fetch for metadata (no clips needed)
+export async function fetchCampaignMetaBySlug(slug: string): Promise<Campaign | undefined> {
+  const { data: row, error } = await supabase
+    .from("campaigns")
+    .select("*")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !row) {
+    const demo = DEMO_CAMPAIGNS.find((c) => c.slug === slug);
+    return demo ? { ...demo } : undefined;
+  }
+
+  return mapCampaignRow(row);
+}
+
 async function fetchClipsForCampaign(campaignId: string): Promise<Clip[]> {
   const { data: clipRows, error } = await supabase
     .from("clips")
