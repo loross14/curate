@@ -104,13 +104,6 @@ export function SessionSummary({ shipped, skipped, campaignName, onNewSession, o
           </div>
         )}
 
-        {/* STUB: Backend actions */}
-        <div className="border border-dashed border-zinc-700 rounded-xl p-4 text-center">
-          <p className="text-xs text-zinc-600 font-mono">
-            [ STUB: publish queue → per-platform adaptation → auto-schedule → track engagement ]
-          </p>
-        </div>
-
         {/* Navigation */}
         <div className="flex gap-3 mt-6">
           {onNewSession && (

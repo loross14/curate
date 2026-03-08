@@ -1,6 +1,6 @@
 "use client";
 
-import { Clip } from "@/lib/clips";
+import { Clip, formatPillar, PILLAR_COLORS } from "@/lib/clips";
 
 interface ClipCardProps {
   clip: Clip;
@@ -8,23 +8,7 @@ interface ClipCardProps {
   layout?: "mobile" | "desktop";
 }
 
-const TYPE_LABELS: Record<string, string> = {
-  hot_take: "HOT TAKE",
-  insight: "INSIGHT",
-  funny: "FUNNY",
-  breaking_news: "BREAKING",
-  guest_highlight: "GUEST",
-  education: "EDUCATION",
-};
-
-const TYPE_COLORS: Record<string, string> = {
-  hot_take: "bg-red-500/20 text-red-400",
-  insight: "bg-blue-500/20 text-blue-400",
-  funny: "bg-amber-500/20 text-amber-400",
-  breaking_news: "bg-purple-500/20 text-purple-400",
-  guest_highlight: "bg-emerald-500/20 text-emerald-400",
-  education: "bg-cyan-500/20 text-cyan-400",
-};
+const pillarBadge = (type: string) => PILLAR_COLORS[type]?.badge || "bg-zinc-500/20 text-zinc-400";
 
 const ENERGY_DOTS: Record<string, string> = {
   high: "bg-green-400",
@@ -61,8 +45,8 @@ function ClipMeta({ clip }: { clip: Clip }) {
   return (
     <>
       <div className="flex items-center gap-2 mb-3">
-        <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[clip.type]}`}>
-          {TYPE_LABELS[clip.type]}
+        <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${pillarBadge(clip.type)}`}>
+          {formatPillar(clip.type)}
         </span>
         <div className="flex items-center gap-1">
           <div className={`w-1.5 h-1.5 rounded-full ${ENERGY_DOTS[clip.energy]}`} />
@@ -189,8 +173,8 @@ export function DesktopClipView({ clip, swipeDirection }: { clip: Clip; swipeDir
             <div>
               <p className="text-xs text-zinc-500 mb-1">virality score</p>
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${TYPE_COLORS[clip.type]}`}>
-                  {TYPE_LABELS[clip.type]}
+                <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${pillarBadge(clip.type)}`}>
+                  {formatPillar(clip.type)}
                 </span>
                 <div className="flex items-center gap-1">
                   <div className={`w-1.5 h-1.5 rounded-full ${ENERGY_DOTS[clip.energy]}`} />
@@ -238,12 +222,6 @@ export function DesktopClipView({ clip, swipeDirection }: { clip: Clip; swipeDir
           </div>
         </div>
 
-        {/* STUB: Publishing controls */}
-        <div className="border border-dashed border-zinc-700 rounded-xl p-4">
-          <p className="text-xs text-zinc-600 font-mono text-center">
-            [ publish controls · schedule · caption edit · A/B test ]
-          </p>
-        </div>
       </div>
     </div>
   );

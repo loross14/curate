@@ -1,6 +1,7 @@
 "use client";
 
 import { CampaignWithClips } from "@/lib/campaigns";
+import { formatPillar } from "@/lib/clips";
 import { CurateLogo } from "./CurateLogo";
 
 interface CampaignDashboardProps {
@@ -31,7 +32,7 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
         <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-5xl mx-auto">
             <div className="mb-10">
-              <h2 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">CAMPAIGNS</h2>
+              <h2 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">CAMPAIGNS CURATED</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {campaigns.map((c) => (
                   <CampaignCard key={c.id} campaign={c} onSelect={onSelectCampaign} />
@@ -62,7 +63,7 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 pb-8">
-        <h2 className="text-xs font-mono text-zinc-500 mb-3 tracking-wider">CAMPAIGNS</h2>
+        <h2 className="text-xs font-mono text-zinc-500 mb-3 tracking-wider">CAMPAIGNS CURATED</h2>
         <div className="space-y-3">
           {campaigns.map((c) => (
             <CampaignCard key={c.id} campaign={c} onSelect={onSelectCampaign} />
@@ -129,7 +130,7 @@ function CampaignCard({
             .slice(0, 5)
             .map(([type, count]) => (
               <span key={type} className="text-[10px] bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded">
-                {type.replace("_", " ")} ({count})
+                {formatPillar(type)} ({count})
               </span>
             ))}
         </div>

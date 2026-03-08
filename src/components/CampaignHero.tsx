@@ -1,6 +1,7 @@
 "use client";
 
 import { CampaignWithClips, CampaignStrategy, GuestProfile } from "@/lib/campaigns";
+import { formatPillar, PILLAR_COLORS } from "@/lib/clips";
 import { CurateLogo } from "./CurateLogo";
 import { ScoreRing } from "./ClipCard";
 
@@ -18,19 +19,7 @@ const TIER_COLORS: Record<string, string> = {
   C: "bg-zinc-800 text-zinc-500 border-zinc-700",
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  hot_take: "Hot Takes", insight: "Insights", funny: "Comedy",
-  breaking_news: "Breaking News", guest_highlight: "Guest Moments", education: "Education",
-};
-
-const TYPE_COLORS: Record<string, string> = {
-  hot_take: "bg-red-500/15 text-red-400 border-red-500/20",
-  insight: "bg-blue-500/15 text-blue-400 border-blue-500/20",
-  funny: "bg-amber-500/15 text-amber-400 border-amber-500/20",
-  breaking_news: "bg-purple-500/15 text-purple-400 border-purple-500/20",
-  guest_highlight: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-  education: "bg-cyan-500/15 text-cyan-400 border-cyan-500/20",
-};
+const pillarCard = (type: string) => PILLAR_COLORS[type]?.card || "bg-zinc-800 text-zinc-400 border-zinc-700";
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -292,9 +281,9 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
                     <h3 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">EXTRACTED CLIP MIX</h3>
                     <div className="grid grid-cols-3 gap-3">
                       {Object.entries(typeBreakdown).sort(([, a], [, b]) => b - a).map(([type, count]) => (
-                        <div key={type} className={`rounded-lg border px-3 py-2.5 ${TYPE_COLORS[type] || "bg-zinc-800 text-zinc-400 border-zinc-700"}`}>
+                        <div key={type} className={`rounded-lg border px-3 py-2.5 ${pillarCard(type)}`}>
                           <p className="text-lg font-bold">{count}</p>
-                          <p className="text-[10px] opacity-80">{TYPE_LABELS[type] || type}</p>
+                          <p className="text-[10px] opacity-80">{formatPillar(type)}</p>
                         </div>
                       ))}
                     </div>
@@ -450,8 +439,8 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
             <h3 className="text-[10px] font-mono text-zinc-500 mb-3 tracking-wider">EXTRACTED CLIP MIX</h3>
             <div className="flex flex-wrap gap-2">
               {Object.entries(typeBreakdown).sort(([, a], [, b]) => b - a).map(([type, count]) => (
-                <span key={type} className={`text-[11px] px-2.5 py-1 rounded-lg border ${TYPE_COLORS[type] || "bg-zinc-800 text-zinc-400 border-zinc-700"}`}>
-                  {count} {TYPE_LABELS[type] || type}
+                <span key={type} className={`text-[11px] px-2.5 py-1 rounded-lg border ${pillarCard(type)}`}>
+                  {count} {formatPillar(type)}
                 </span>
               ))}
             </div>

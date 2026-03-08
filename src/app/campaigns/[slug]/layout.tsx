@@ -10,24 +10,24 @@ export async function generateMetadata({
   const campaign = await fetchCampaignMetaBySlug(slug);
 
   if (!campaign) {
-    return { title: "Campaign Not Found" };
+    return { title: "not found" };
   }
 
   const clipLabel = campaign.clipCount > 0 ? `${campaign.clipCount} clips` : "clips pending";
   const platformLabel = campaign.platforms.slice(0, 3).join(", ");
 
   return {
-    title: campaign.name,
+    title: campaign.name.toLowerCase(),
     description: campaign.description,
     openGraph: {
       type: "website",
-      title: `${campaign.name} — CURATE`,
+      title: `${campaign.name.toLowerCase()} — curate`,
       description: campaign.description,
-      siteName: "CURATE",
+      siteName: "curate",
     },
     twitter: {
       card: "summary_large_image",
-      title: `${campaign.name} — CURATE`,
+      title: `${campaign.name.toLowerCase()} — curate`,
       description: `${campaign.description} | ${clipLabel} → ${platformLabel}`,
     },
   };
