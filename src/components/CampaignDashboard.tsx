@@ -48,7 +48,7 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
 
             {draftCampaigns.length > 0 && (
               <div>
-                <h2 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">DRAFTS</h2>
+                <h2 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">DRAFT CAMPAIGNS</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                   {draftCampaigns.map((c) => (
                     <CampaignCard key={c.id} campaign={c} onSelect={onSelectCampaign} size="small" />
@@ -94,7 +94,7 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
 
         {draftCampaigns.length > 0 && (
           <div>
-            <h2 className="text-xs font-mono text-zinc-500 mb-3 tracking-wider">DRAFTS</h2>
+            <h2 className="text-xs font-mono text-zinc-500 mb-3 tracking-wider">DRAFT CAMPAIGNS</h2>
             <div className="space-y-3">
               {draftCampaigns.map((c) => (
                 <CampaignCard key={c.id} campaign={c} onSelect={onSelectCampaign} size="small" />
