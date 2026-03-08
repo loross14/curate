@@ -48,7 +48,7 @@ function StartOrPending({ clips, onStartSession }: { clips: unknown[]; onStartSe
   if (clips.length > 0) {
     return (
       <button onClick={onStartSession} className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors text-sm glow-pulse">
-        Begin Curation Session
+        Review Clips
       </button>
     );
   }
@@ -236,7 +236,7 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
           </div>
           {clips.length > 0 && (
             <button onClick={onStartSession} className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors glow-pulse">
-              Start Curation →
+              Review Clips →
             </button>
           )}
         </header>
