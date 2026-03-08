@@ -23,10 +23,7 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
     return (
       <div className="h-dvh flex flex-col">
         <header className="flex items-center justify-between px-8 pt-6 pb-4 border-b border-[#1a1a1a]">
-          <div>
-            <CurateLogo variant="full" size="md" />
-            <p className="text-xs text-zinc-500 mt-0.5">Campaign Creator</p>
-          </div>
+          <CurateLogo variant="full" size="md" />
           <div className="flex items-center gap-3 text-xs font-mono text-zinc-500">
             <span>{campaigns.length} campaigns</span>
             <span className="text-zinc-700">·</span>
@@ -78,7 +75,6 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
     <div className="h-dvh flex flex-col">
       <header className="px-5 pt-6 pb-4">
         <CurateLogo variant="full" size="sm" />
-        <p className="text-xs text-zinc-500 mt-0.5">Campaign Creator</p>
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 pb-8">
