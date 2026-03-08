@@ -116,7 +116,7 @@ function CampaignCard({
   onSelect: (c: CampaignWithClips) => void;
   size: "large" | "small";
 }) {
-  const isActive = campaign.status === "active" && campaign.clips.length > 0;
+  const isActive = campaign.status !== "completed" || campaign.clips.length > 0;
   const typeBreakdown = campaign.clips.reduce((acc, c) => {
     acc[c.type] = (acc[c.type] || 0) + 1;
     return acc;

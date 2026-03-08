@@ -215,12 +215,19 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
                 </div>
 
                 {/* Start button (bottom of sidebar) */}
-                <button
-                  onClick={onStartSession}
-                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors text-sm glow-pulse"
-                >
-                  Begin Curation Session
-                </button>
+                {clips.length > 0 ? (
+                  <button
+                    onClick={onStartSession}
+                    className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors text-sm glow-pulse"
+                  >
+                    Begin Curation Session
+                  </button>
+                ) : (
+                  <div className="border border-dashed border-zinc-700 rounded-xl p-4 text-center">
+                    <p className="text-xs text-zinc-500 font-mono">clips pending extraction</p>
+                    <p className="text-[10px] text-zinc-600 mt-1">source material identified — awaiting processing</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -337,12 +344,19 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
         )}
 
         {/* Start */}
-        <button
-          onClick={onStartSession}
-          className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors glow-pulse"
-        >
-          Start Curation →
-        </button>
+        {clips.length > 0 ? (
+          <button
+            onClick={onStartSession}
+            className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl transition-colors glow-pulse"
+          >
+            Start Curation →
+          </button>
+        ) : (
+          <div className="border border-dashed border-zinc-700 rounded-xl p-4 text-center">
+            <p className="text-sm text-zinc-500 font-mono">clips pending extraction</p>
+            <p className="text-[10px] text-zinc-600 mt-1">source material identified — awaiting processing</p>
+          </div>
+        )}
       </div>
     </div>
   );
