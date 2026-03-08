@@ -1,7 +1,7 @@
 "use client";
 
 import { CampaignWithClips } from "@/lib/campaigns";
-import { formatPillar } from "@/lib/clips";
+import { formatPillar, PILLAR_COLORS } from "@/lib/clips";
 import { CurateLogo } from "./CurateLogo";
 
 interface CampaignDashboardProps {
@@ -129,7 +129,7 @@ function CampaignCard({
             .sort(([, a], [, b]) => b - a)
             .slice(0, 5)
             .map(([type, count]) => (
-              <span key={type} className="text-[10px] bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded">
+              <span key={type} className={`text-[10px] px-2 py-0.5 rounded ${PILLAR_COLORS[type]?.badge || "bg-zinc-500/20 text-zinc-400"}`}>
                 {formatPillar(type)} ({count})
               </span>
             ))}
