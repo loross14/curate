@@ -53,10 +53,9 @@ function StartOrPending({ clips, onStartSession }: { clips: unknown[]; onStartSe
     );
   }
   return (
-    <div className="border border-dashed border-zinc-700 rounded-xl p-4 text-center">
-      <p className="text-xs text-zinc-500 font-mono">clips pending extraction</p>
-      <p className="text-[10px] text-zinc-600 mt-1">source material identified — awaiting processing</p>
-    </div>
+    <button disabled className="w-full py-4 bg-zinc-800 text-zinc-500 font-medium rounded-xl text-sm cursor-not-allowed">
+      <span className="inline-block animate-pulse">Processing clips…</span>
+    </button>
   );
 }
 
@@ -234,9 +233,13 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
               <p className="text-xs text-zinc-500">campaign briefing</p>
             </div>
           </div>
-          {clips.length > 0 && (
+          {clips.length > 0 ? (
             <button onClick={onStartSession} className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium rounded-xl transition-colors glow-pulse">
               Review Clips →
+            </button>
+          ) : (
+            <button disabled className="px-6 py-2.5 bg-zinc-800 text-zinc-500 text-sm font-medium rounded-xl cursor-not-allowed">
+              <span className="animate-pulse">Processing…</span>
             </button>
           )}
         </header>
