@@ -1,6 +1,7 @@
 "use client";
 
 import { CampaignWithClips, CampaignStrategy, GuestProfile } from "@/lib/campaigns";
+import { CurateLogo } from "./CurateLogo";
 import { ScoreRing } from "./ClipCard";
 
 interface CampaignHeroProps {
@@ -229,7 +230,7 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
               </svg>
             </button>
             <div>
-              <h1 className="text-xl font-semibold tracking-tight">CURATE</h1>
+              <CurateLogo variant="mark" size="md" />
               <p className="text-xs text-zinc-500">campaign briefing</p>
             </div>
           </div>
@@ -388,7 +389,7 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
           </svg>
         </button>
         <div>
-          <h1 className="text-lg font-semibold tracking-tight">CURATE</h1>
+          <CurateLogo variant="mark" size="sm" />
           <p className="text-xs text-zinc-500">campaign briefing</p>
         </div>
       </header>

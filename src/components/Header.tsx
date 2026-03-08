@@ -1,5 +1,7 @@
 "use client";
 
+import { CurateLogo } from "./CurateLogo";
+
 interface HeaderProps {
   remaining: number;
   shipped: number;
@@ -32,7 +34,7 @@ export function Header({ remaining, shipped, skipped, layout = "mobile", campaig
           )}
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-semibold tracking-tight">CURATE</h1>
+              <CurateLogo variant="mark" size="md" />
               {campaignName && (
                 <>
                   <span className="text-zinc-700">/</span>
@@ -83,7 +85,7 @@ export function Header({ remaining, shipped, skipped, layout = "mobile", campaig
           </button>
         )}
         <div>
-          <h1 className="text-lg font-semibold tracking-tight">CURATE</h1>
+          <CurateLogo variant="mark" size="sm" />
           {campaignName ? (
             <p className="text-[10px] text-zinc-500 truncate max-w-[140px]">{campaignName}</p>
           ) : (
