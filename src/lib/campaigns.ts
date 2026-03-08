@@ -40,6 +40,7 @@ export interface CampaignStrategy {
 
 export interface Campaign {
   id: string;
+  slug: string;
   name: string;
   description: string;
   source: string;
@@ -215,6 +216,7 @@ const MOB_STRATEGY: CampaignStrategy = {
 export const DEMO_CAMPAIGNS: CampaignWithClips[] = [
   {
     id: "campaign-mob-archive",
+    slug: "mob-archive",
     name: "Moon or Bust Archive",
     description: "102 episodes of Benzinga's flagship crypto show, May 2021 – July 2022. The full arc of the bull run and into the crash. Co-hosted by Logan Ross, Ryan McNamara, and Brian Moir.",
     source: "Moon or Bust (Benzinga)",
@@ -231,6 +233,7 @@ export const DEMO_CAMPAIGNS: CampaignWithClips[] = [
   },
   {
     id: "campaign-birbathon",
+    slug: "birbathon",
     name: "Birbathon 24hr Stream",
     description: "Pax and Spencer went 24 hours straight for the $BIRB token launch on Solana. Featured live on Solana's homepage. LucaNetz (Pudgy Penguins) pulled up. The stream ended with Pax declaring 'sleepathon is over.'",
     source: "Birbathon (X Broadcasts + Twitch)",
@@ -331,3 +334,7 @@ export const DEMO_CAMPAIGNS: CampaignWithClips[] = [
     },
   },
 ];
+
+export function getCampaignBySlug(slug: string): CampaignWithClips | undefined {
+  return DEMO_CAMPAIGNS.find((c) => c.slug === slug);
+}

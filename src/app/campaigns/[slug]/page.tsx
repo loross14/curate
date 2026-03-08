@@ -1,0 +1,39 @@
+"use client";
+
+import { use } from "react";
+import { useRouter } from "next/navigation";
+import { getCampaignBySlug } from "@/lib/campaigns";
+import { CampaignHero } from "@/components/CampaignHero";
+import { useLayout } from "@/lib/hooks";
+
+export default function CampaignPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params);
+  const router = useRouter();
+  const layout = useLayout();
+  const campaign = getCampaignBySlug(slug);
+
+  if (!campaign) {
+    return (
+      <div className="h-dvh flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-zinc-500 font-mono text-sm">campaign not found</p>
+          <button
+            onClick={() => router.push("/")}
+            className="mt-4 text-xs text-indigo-400 hover:text-indigo-300"
+          >
+            ← back to dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <CampaignHero
+      campaign={campaign}
+      onStartSession={() => router.push(`/campaigns/${slug}/review`)}
+      onBack={() => router.push("/")}
+      layout={layout}
+    />
+  );
+}
