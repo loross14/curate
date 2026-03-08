@@ -1,7 +1,7 @@
 "use client";
 
 import { Clip, formatPillar, getPillarBadge, ENERGY_DOTS } from "@/lib/clips";
-import { getInitials } from "@/lib/utils";
+import { getInitials, formatTimestamp } from "@/lib/utils";
 
 interface ClipCardProps {
   clip: Clip;
@@ -34,17 +34,42 @@ export function ScoreRing({ score, size = 56 }: { score: number; size?: number }
   );
 }
 
+function PillarBadge({ clip }: { clip: Clip }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${getPillarBadge(clip.type)}`}>
+        {formatPillar(clip.type)}
+      </span>
+      <div className="flex items-center gap-1">
+        <div className={`w-1.5 h-1.5 rounded-full ${ENERGY_DOTS[clip.energy]}`} />
+        <span className="text-[10px] text-zinc-500 uppercase">{clip.energy}</span>
+      </div>
+    </div>
+  );
+}
+
+function GuestBadge({ name, title, size = "sm" }: { name: string; title?: string; size?: "sm" | "md" }) {
+  const sizeClasses = size === "md"
+    ? "w-10 h-10 text-sm"
+    : "w-8 h-8 text-xs";
+  return (
+    <div className={`flex items-center gap-${size === "md" ? "3" : "2"}`}>
+      <div className={`${sizeClasses} rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 font-bold`}>
+        {getInitials(name)}
+      </div>
+      <div>
+        <p className="text-sm font-medium">{name}</p>
+        {title && <p className="text-[11px] text-zinc-500">{title}</p>}
+      </div>
+    </div>
+  );
+}
+
 function ClipMeta({ clip }: { clip: Clip }) {
   return (
     <>
       <div className="flex items-center gap-2 mb-3">
-        <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${getPillarBadge(clip.type)}`}>
-          {formatPillar(clip.type)}
-        </span>
-        <div className="flex items-center gap-1">
-          <div className={`w-1.5 h-1.5 rounded-full ${ENERGY_DOTS[clip.energy]}`} />
-          <span className="text-[10px] text-zinc-500 uppercase">{clip.energy}</span>
-        </div>
+        <PillarBadge clip={clip} />
         <span className="text-[10px] text-zinc-600 ml-auto font-mono">EP {clip.episodeNumber}</span>
       </div>
 
@@ -52,14 +77,8 @@ function ClipMeta({ clip }: { clip: Clip }) {
       <p className="text-sm text-zinc-400 leading-relaxed mb-4">{clip.hook}</p>
 
       {clip.guest && (
-        <div className="flex items-center gap-2 mb-4 pb-4 border-b border-[#2a2a2a]">
-          <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold">
-            {getInitials(clip.guest)}
-          </div>
-          <div>
-            <p className="text-sm font-medium">{clip.guest}</p>
-            <p className="text-[11px] text-zinc-500">{clip.guestTitle}</p>
-          </div>
+        <div className="mb-4 pb-4 border-b border-[#2a2a2a]">
+          <GuestBadge name={clip.guest} title={clip.guestTitle} />
         </div>
       )}
 
@@ -141,8 +160,8 @@ export function DesktopClipView({ clip, swipeDirection }: { clip: Clip; swipeDir
         <div className="mb-3 flex items-center justify-between">
           <span className="text-xs text-zinc-500 font-mono">PREVIEW</span>
           <span className="text-[10px] text-zinc-600 font-mono">
-            {Math.floor(clip.startSeconds / 60)}:{(clip.startSeconds % 60).toString().padStart(2, "0")} →{" "}
-            {Math.floor(clip.endSeconds / 60)}:{(clip.endSeconds % 60).toString().padStart(2, "0")}
+            {formatTimestamp(clip.startSeconds)} →{" "}
+            {formatTimestamp(clip.endSeconds)}
           </span>
         </div>
         <VideoEmbed clip={clip} />
@@ -165,15 +184,7 @@ export function DesktopClipView({ clip, swipeDirection }: { clip: Clip; swipeDir
             <ScoreRing score={clip.viralityScore} size={64} />
             <div>
               <p className="text-xs text-zinc-500 mb-1">virality score</p>
-              <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${getPillarBadge(clip.type)}`}>
-                  {formatPillar(clip.type)}
-                </span>
-                <div className="flex items-center gap-1">
-                  <div className={`w-1.5 h-1.5 rounded-full ${ENERGY_DOTS[clip.energy]}`} />
-                  <span className="text-[10px] text-zinc-500 uppercase">{clip.energy}</span>
-                </div>
-              </div>
+              <PillarBadge clip={clip} />
             </div>
           </div>
 
@@ -185,15 +196,7 @@ export function DesktopClipView({ clip, swipeDirection }: { clip: Clip; swipeDir
         {clip.guest && (
           <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4">
             <p className="text-xs text-zinc-500 mb-2">guest</p>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-sm font-bold">
-                {getInitials(clip.guest)}
-              </div>
-              <div>
-                <p className="text-sm font-medium">{clip.guest}</p>
-                <p className="text-[11px] text-zinc-500">{clip.guestTitle}</p>
-              </div>
-            </div>
+            <GuestBadge name={clip.guest} title={clip.guestTitle} size="md" />
           </div>
         )}
 

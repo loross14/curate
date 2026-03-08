@@ -17,6 +17,8 @@ export default function Home() {
     fetchCampaigns().then((data) => {
       setCampaigns(data);
       setLoading(false);
+    }).catch(() => {
+      setLoading(false);
     });
   }, []);
 
@@ -24,7 +26,7 @@ export default function Home() {
     router.push(`/campaigns/${campaign.slug}`);
   };
 
-  if (loading) {
+  if (loading || layout === null) {
     return (
       <div className="h-dvh flex items-center justify-center">
         <p className="text-zinc-500 font-mono text-sm animate-pulse">loading campaigns…</p>

@@ -26,3 +26,7 @@ export function countPlatforms(clips: Clip[]): Record<string, number> {
 export function getInitials(name: string): string {
   return name.split(" ").map((n) => n[0]).join("");
 }
+
+export function formatTimestamp(seconds: number): string {
+  return `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, "0")}`;
+}

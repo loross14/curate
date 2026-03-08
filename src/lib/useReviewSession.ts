@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Clip } from "./clips";
 import { CampaignWithClips } from "./campaigns";
@@ -38,6 +38,7 @@ export function useReviewSession(slug: string): ReviewSession {
   const done = currentIndex >= clips.length && clips.length > 0;
   const currentClip = clips[currentIndex];
   const remaining = clips.length - currentIndex;
+  const advanceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     fetchCampaignBySlug(slug).then((data) => {
@@ -46,11 +47,21 @@ export function useReviewSession(slug: string): ReviewSession {
         setClips([...data.clips]);
       }
       setLoading(false);
+    }).catch(() => {
+      setLoading(false);
     });
   }, [slug]);
 
+  // Clean up any pending advance timer on unmount
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) clearTimeout(advanceTimerRef.current);
+    };
+  }, []);
+
   const advanceClip = useCallback(() => {
-    setTimeout(() => {
+    advanceTimerRef.current = setTimeout(() => {
+      advanceTimerRef.current = null;
       setSwipeDirection(null);
       setCurrentIndex((i) => i + 1);
     }, 400);

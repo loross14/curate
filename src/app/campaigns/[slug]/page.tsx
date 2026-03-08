@@ -18,10 +18,12 @@ export default function CampaignPage({ params }: { params: Promise<{ slug: strin
     fetchCampaignBySlug(slug).then((data) => {
       setCampaign(data || null);
       setLoading(false);
+    }).catch(() => {
+      setLoading(false);
     });
   }, [slug]);
 
-  if (loading) {
+  if (loading || layout === null) {
     return (
       <div className="h-dvh flex items-center justify-center">
         <p className="text-zinc-500 font-mono text-sm animate-pulse">loading campaign…</p>

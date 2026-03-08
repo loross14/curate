@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ClipCard, DesktopClipView } from "@/components/ClipCard";
 import { ActionBar } from "@/components/ActionBar";
@@ -16,7 +16,15 @@ export default function ReviewPage({ params }: { params: Promise<{ slug: string 
   const layout = useLayout();
   const session = useReviewSession(slug);
 
-  if (session.loading) {
+  const shouldRedirect = !session.loading && (!session.campaign || session.clips.length === 0);
+
+  useEffect(() => {
+    if (shouldRedirect) {
+      router.push(`/campaigns/${slug}`);
+    }
+  }, [shouldRedirect, router, slug]);
+
+  if (session.loading || layout === null || shouldRedirect) {
     return (
       <div className="h-dvh flex items-center justify-center">
         <p className="text-zinc-500 font-mono text-sm animate-pulse">loading clips…</p>
@@ -24,17 +32,12 @@ export default function ReviewPage({ params }: { params: Promise<{ slug: string 
     );
   }
 
-  if (!session.campaign || session.clips.length === 0) {
-    router.push(`/campaigns/${slug}`);
-    return null;
-  }
-
   if (session.done) {
     return (
       <SessionSummary
         shipped={session.shipped}
         skipped={session.skipped}
-        campaignName={session.campaign.name}
+        campaignName={session.campaign!.name}
         onNewSession={session.handleNewSession}
         onBackToCampaign={session.handleBack}
         onBackToDashboard={() => router.push("/")}
@@ -50,7 +53,7 @@ export default function ReviewPage({ params }: { params: Promise<{ slug: string 
           shipped={session.shipped.length}
           skipped={session.skipped.length}
           layout="desktop"
-          campaignName={session.campaign.name}
+          campaignName={session.campaign!.name}
           onBack={session.handleBack}
         />
         <div className="flex-1 flex overflow-hidden">
@@ -81,7 +84,7 @@ export default function ReviewPage({ params }: { params: Promise<{ slug: string 
         shipped={session.shipped.length}
         skipped={session.skipped.length}
         layout="mobile"
-        campaignName={session.campaign.name}
+        campaignName={session.campaign!.name}
         onBack={session.handleBack}
       />
       <main className="flex-1 flex items-center justify-center px-4 pb-4 overflow-hidden">

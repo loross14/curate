@@ -2,6 +2,14 @@
 
 import { CurateLogo } from "./CurateLogo";
 
+function ChevronLeftIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="15 18 9 12 15 6" />
+    </svg>
+  );
+}
+
 interface HeaderProps {
   remaining: number;
   shipped: number;
@@ -27,9 +35,7 @@ export function Header({ remaining, shipped, skipped, layout = "mobile", campaig
               onClick={onBack}
               className="text-zinc-500 hover:text-zinc-300 transition-colors"
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
+              <ChevronLeftIcon size={18} />
             </button>
           )}
           <div>
@@ -79,9 +85,7 @@ export function Header({ remaining, shipped, skipped, layout = "mobile", campaig
       <div className="flex items-center gap-3">
         {onBack && (
           <button onClick={onBack} className="text-zinc-500 hover:text-zinc-300 transition-colors">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
+            <ChevronLeftIcon size={18} />
           </button>
         )}
         <div>

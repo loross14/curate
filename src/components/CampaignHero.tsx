@@ -20,7 +20,7 @@ const TIER_COLORS: Record<string, string> = {
   C: "bg-zinc-800 text-zinc-500 border-zinc-700",
 };
 
-function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({ status }: { status: string }) {
   return (
     <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${STATUS_STYLES[status] || STATUS_STYLES.draft}`}>
       {status.toUpperCase()}
@@ -88,7 +88,26 @@ function GuestTierList({ guests }: { guests: GuestProfile[] }) {
   );
 }
 
-function ContentPillars({ pillars }: { pillars: CampaignStrategy["pillars"] }) {
+function ContentPillars({ pillars, layout = "desktop" }: { pillars: CampaignStrategy["pillars"]; layout?: "mobile" | "desktop" }) {
+  if (layout === "mobile") {
+    return (
+      <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4">
+        <h3 className="text-[10px] font-mono text-zinc-500 mb-3 tracking-wider">CONTENT PILLARS</h3>
+        <div className="space-y-2.5">
+          {pillars.map((p) => (
+            <div key={p.slug} className="border-l-2 border-zinc-800 pl-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-zinc-300">{p.name}</p>
+                <span className="text-[9px] text-indigo-400 font-mono">{p.estimatedClips}</span>
+              </div>
+              <p className="text-[10px] text-zinc-500 leading-relaxed mt-0.5">{p.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-5">
       <h3 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">CONTENT PILLARS</h3>
@@ -190,7 +209,7 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
 
   const uniqueGuests = [...new Set(clips.filter((c) => c.guest).map((c) => c.guest!))];
   const uniqueEpisodes = [...new Set(clips.map((c) => c.episodeNumber))];
-  const topClips = [...clips].sort((a, b) => b.viralityScore - a.viralityScore).slice(0, 3);
+  const topClips = clips.slice(0, 3);
 
   // ═══ DESKTOP ═══
   if (layout === "desktop") {
@@ -402,20 +421,7 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
 
         {/* Content pillars */}
         {strategy && strategy.pillars.length > 0 && (
-          <div className="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 mb-4">
-            <h3 className="text-[10px] font-mono text-zinc-500 mb-3 tracking-wider">CONTENT PILLARS</h3>
-            <div className="space-y-2.5">
-              {strategy.pillars.map((p) => (
-                <div key={p.slug} className="border-l-2 border-zinc-800 pl-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs font-semibold text-zinc-300">{p.name}</p>
-                    <span className="text-[9px] text-indigo-400 font-mono">{p.estimatedClips}</span>
-                  </div>
-                  <p className="text-[10px] text-zinc-500 leading-relaxed mt-0.5">{p.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
+          <div className="mb-4"><ContentPillars pillars={strategy.pillars} layout="mobile" /></div>
         )}
 
         {/* Clip mix */}

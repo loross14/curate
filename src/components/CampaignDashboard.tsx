@@ -1,9 +1,10 @@
 "use client";
 
 import { CampaignWithClips } from "@/lib/campaigns";
-import { formatPillar, getPillarBadge, STATUS_STYLES } from "@/lib/clips";
+import { formatPillar, getPillarBadge } from "@/lib/clips";
 import { groupBy } from "@/lib/utils";
 import { CurateLogo } from "./CurateLogo";
+import { StatusBadge } from "./CampaignHero";
 
 interface CampaignDashboardProps {
   campaigns: CampaignWithClips[];
@@ -95,9 +96,7 @@ function CampaignCard({
             <h3 className="font-semibold tracking-tight truncate text-base">
               {campaign.name}
             </h3>
-            <span className={`text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded-full ${STATUS_STYLES[campaign.status]}`}>
-              {campaign.status.toUpperCase()}
-            </span>
+            <StatusBadge status={campaign.status} />
           </div>
           <p className="text-[11px] text-zinc-500 font-mono">{campaign.source}</p>
         </div>

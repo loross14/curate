@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 export function useMediaQuery(query: string) {
-  const [matches, setMatches] = useState(false);
+  const [matches, setMatches] = useState<boolean | null>(null);
   useEffect(() => {
     const mq = window.matchMedia(query);
     setMatches(mq.matches);
@@ -14,7 +14,8 @@ export function useMediaQuery(query: string) {
   return matches;
 }
 
-export function useLayout() {
+export function useLayout(): "desktop" | "mobile" | null {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  if (isDesktop === null) return null;
   return isDesktop ? "desktop" as const : "mobile" as const;
 }

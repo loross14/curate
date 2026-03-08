@@ -53,7 +53,7 @@ function mapClipRow(row: Record<string, unknown>, source?: Record<string, unknow
 export async function fetchCampaigns(): Promise<CampaignWithClips[]> {
   const { data: campaigns, error } = await supabase
     .from("campaigns")
-    .select("*")
+    .select("id, slug, name, description, source_label, creator, status, clip_count, reviewed_count, shipped_count, platforms, tags, created_at")
     .order("created_at", { ascending: false });
 
   if (error || !campaigns) {
@@ -87,7 +87,7 @@ export async function fetchCampaigns(): Promise<CampaignWithClips[]> {
 export async function fetchCampaignBySlug(slug: string): Promise<CampaignWithClips | undefined> {
   const { data: row, error } = await supabase
     .from("campaigns")
-    .select("*")
+    .select("*, clips(*, sources(metadata))")
     .eq("slug", slug)
     .single();
 
@@ -97,7 +97,10 @@ export async function fetchCampaignBySlug(slug: string): Promise<CampaignWithCli
   }
 
   const campaign = mapCampaignRow(row);
-  const clips = await fetchClipsForCampaign(row.id);
+  const clipRows = (row.clips as Record<string, unknown>[]) || [];
+  const clips = clipRows
+    .map((c) => mapClipRow(c, c.sources as Record<string, unknown> | undefined))
+    .sort((a, b) => b.viralityScore - a.viralityScore);
   return { ...campaign, clips };
 }
 
