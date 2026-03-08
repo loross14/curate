@@ -128,7 +128,7 @@ export default function ReviewPage({ params }: { params: Promise<{ slug: string 
           onBack={handleBack}
         />
         <div className="flex-1 flex overflow-hidden">
-          <QueueSidebar clips={clips} currentIndex={currentIndex} shipped={shipped} skipped={skipped} />
+          <QueueSidebar clips={clips} currentIndex={currentIndex} shipped={shipped} skipped={skipped} onJumpTo={(i) => setCurrentIndex(i)} />
           <div className="flex-1 flex flex-col">
             <main className="flex-1 flex p-6 overflow-hidden">
               {currentClip && (

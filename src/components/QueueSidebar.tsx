@@ -8,6 +8,7 @@ interface QueueSidebarProps {
   currentIndex: number;
   shipped: Clip[];
   skipped: Clip[];
+  onJumpTo?: (index: number) => void;
 }
 
 const TYPE_DOT: Record<string, string> = {
@@ -19,7 +20,7 @@ const TYPE_DOT: Record<string, string> = {
   education: "bg-cyan-400",
 };
 
-export function QueueSidebar({ clips, currentIndex, shipped, skipped }: QueueSidebarProps) {
+export function QueueSidebar({ clips, currentIndex, shipped, skipped, onJumpTo }: QueueSidebarProps) {
   const upcoming = clips.slice(currentIndex + 1);
   const avgShipped = shipped.length > 0
     ? (shipped.reduce((s, c) => s + c.viralityScore, 0) / shipped.length).toFixed(1)
@@ -66,23 +67,27 @@ export function QueueSidebar({ clips, currentIndex, shipped, skipped }: QueueSid
       <div className="flex-1 overflow-y-auto no-scrollbar p-4">
         <p className="text-xs text-zinc-500 mb-2 font-mono">QUEUE ({upcoming.length})</p>
         <div className="space-y-2">
-          {upcoming.map((c, i) => (
-            <div
-              key={c.id}
-              className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
-                i === 0 ? "bg-zinc-800/50 border border-zinc-700/50" : "hover:bg-zinc-900"
-              }`}
-            >
-              <div className={`w-1.5 h-1.5 rounded-full ${TYPE_DOT[c.type]}`} />
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] text-zinc-300 truncate">{c.title}</p>
-                <p className="text-[9px] text-zinc-600">
-                  EP {c.episodeNumber}{c.guest ? ` · ${c.guest}` : ""}
-                </p>
-              </div>
-              <ScoreRing score={c.viralityScore} size={28} />
-            </div>
-          ))}
+          {upcoming.map((c, i) => {
+            const queueIndex = currentIndex + 1 + i;
+            return (
+              <button
+                key={c.id}
+                onClick={() => onJumpTo?.(queueIndex)}
+                className={`w-full flex items-center gap-2 p-2 rounded-lg transition-colors text-left ${
+                  i === 0 ? "bg-zinc-800/50 border border-zinc-700/50" : "hover:bg-zinc-800/30 cursor-pointer"
+                }`}
+              >
+                <div className={`w-1.5 h-1.5 rounded-full ${TYPE_DOT[c.type]}`} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] text-zinc-300 truncate">{c.title}</p>
+                  <p className="text-[9px] text-zinc-600">
+                    EP {c.episodeNumber}{c.guest ? ` · ${c.guest}` : ""}
+                  </p>
+                </div>
+                <ScoreRing score={c.viralityScore} size={28} />
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
