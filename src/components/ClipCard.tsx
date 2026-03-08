@@ -1,20 +1,13 @@
 "use client";
 
-import { Clip, formatPillar, PILLAR_COLORS } from "@/lib/clips";
+import { Clip, formatPillar, getPillarBadge, ENERGY_DOTS } from "@/lib/clips";
+import { getInitials } from "@/lib/utils";
 
 interface ClipCardProps {
   clip: Clip;
   swipeDirection: "left" | "right" | null;
   layout?: "mobile" | "desktop";
 }
-
-const pillarBadge = (type: string) => PILLAR_COLORS[type]?.badge || "bg-zinc-500/20 text-zinc-400";
-
-const ENERGY_DOTS: Record<string, string> = {
-  high: "bg-green-400",
-  medium: "bg-amber-400",
-  low: "bg-zinc-500",
-};
 
 export function ScoreRing({ score, size = 56 }: { score: number; size?: number }) {
   const pct = (score / 10) * 100;
@@ -45,7 +38,7 @@ function ClipMeta({ clip }: { clip: Clip }) {
   return (
     <>
       <div className="flex items-center gap-2 mb-3">
-        <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${pillarBadge(clip.type)}`}>
+        <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${getPillarBadge(clip.type)}`}>
           {formatPillar(clip.type)}
         </span>
         <div className="flex items-center gap-1">
@@ -61,7 +54,7 @@ function ClipMeta({ clip }: { clip: Clip }) {
       {clip.guest && (
         <div className="flex items-center gap-2 mb-4 pb-4 border-b border-[#2a2a2a]">
           <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold">
-            {clip.guest.split(" ").map(n => n[0]).join("")}
+            {getInitials(clip.guest)}
           </div>
           <div>
             <p className="text-sm font-medium">{clip.guest}</p>
@@ -173,7 +166,7 @@ export function DesktopClipView({ clip, swipeDirection }: { clip: Clip; swipeDir
             <div>
               <p className="text-xs text-zinc-500 mb-1">virality score</p>
               <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${pillarBadge(clip.type)}`}>
+                <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${getPillarBadge(clip.type)}`}>
                   {formatPillar(clip.type)}
                 </span>
                 <div className="flex items-center gap-1">
@@ -194,7 +187,7 @@ export function DesktopClipView({ clip, swipeDirection }: { clip: Clip; swipeDir
             <p className="text-xs text-zinc-500 mb-2">guest</p>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 text-sm font-bold">
-                {clip.guest.split(" ").map(n => n[0]).join("")}
+                {getInitials(clip.guest)}
               </div>
               <div>
                 <p className="text-sm font-medium">{clip.guest}</p>

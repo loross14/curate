@@ -1,7 +1,8 @@
 "use client";
 
 import { CampaignWithClips } from "@/lib/campaigns";
-import { formatPillar, PILLAR_COLORS } from "@/lib/clips";
+import { formatPillar, getPillarBadge, STATUS_STYLES } from "@/lib/clips";
+import { groupBy } from "@/lib/utils";
 import { CurateLogo } from "./CurateLogo";
 
 interface CampaignDashboardProps {
@@ -9,12 +10,6 @@ interface CampaignDashboardProps {
   onSelectCampaign: (campaign: CampaignWithClips) => void;
   layout: "mobile" | "desktop";
 }
-
-const STATUS_STYLES: Record<string, string> = {
-  active: "bg-green-500/15 text-green-400",
-  completed: "bg-blue-500/15 text-blue-400",
-  draft: "bg-zinc-500/15 text-zinc-400",
-};
 
 export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: CampaignDashboardProps) {
   if (layout === "desktop") {
@@ -82,10 +77,7 @@ function CampaignCard({
   onSelect: (c: CampaignWithClips) => void;
 }) {
   const isActive = campaign.status !== "completed" || campaign.clips.length > 0;
-  const typeBreakdown = campaign.clips.reduce((acc, c) => {
-    acc[c.type] = (acc[c.type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const typeBreakdown = groupBy(campaign.clips, (c) => c.type);
 
   return (
     <button
@@ -129,7 +121,7 @@ function CampaignCard({
             .sort(([, a], [, b]) => b - a)
             .slice(0, 5)
             .map(([type, count]) => (
-              <span key={type} className={`text-[10px] px-2 py-0.5 rounded ${PILLAR_COLORS[type]?.badge || "bg-zinc-500/20 text-zinc-400"}`}>
+              <span key={type} className={`text-[10px] px-2 py-0.5 rounded ${getPillarBadge(type)}`}>
                 {formatPillar(type)} ({count})
               </span>
             ))}

@@ -1,7 +1,6 @@
 import { supabase } from "./supabase";
 import { Campaign, CampaignWithClips, CampaignStrategy } from "./campaigns";
 import { Clip } from "./clips";
-import { DEMO_CAMPAIGNS } from "./campaigns";
 
 // ── Row → App type mappers ──
 
@@ -58,19 +57,31 @@ export async function fetchCampaigns(): Promise<CampaignWithClips[]> {
     .order("created_at", { ascending: false });
 
   if (error || !campaigns) {
-    console.error("Failed to fetch campaigns, using demo data:", error);
-    return DEMO_CAMPAIGNS;
+    console.error("Failed to fetch campaigns:", error);
+    return [];
   }
 
-  // For each campaign, fetch its clips
-  const results: CampaignWithClips[] = [];
-  for (const row of campaigns) {
-    const mapped = mapCampaignRow(row);
-    const clips = await fetchClipsForCampaign(row.id);
-    results.push({ ...mapped, clips });
+  // Fetch all clips in one query, then group by campaign
+  const campaignIds = campaigns.map((c) => c.id as string);
+  const { data: allClips } = await supabase
+    .from("clips")
+    .select("*, sources(metadata)")
+    .in("campaign_id", campaignIds)
+    .order("virality_score", { ascending: false });
+
+  const clipsByCampaign = new Map<string, Clip[]>();
+  for (const row of allClips || []) {
+    const campaignId = row.campaign_id as string;
+    if (!clipsByCampaign.has(campaignId)) clipsByCampaign.set(campaignId, []);
+    clipsByCampaign.get(campaignId)!.push(
+      mapClipRow(row, row.sources as Record<string, unknown> | undefined)
+    );
   }
 
-  return results.length > 0 ? results : DEMO_CAMPAIGNS;
+  return campaigns.map((row) => ({
+    ...mapCampaignRow(row),
+    clips: clipsByCampaign.get(row.id as string) || [],
+  }));
 }
 
 export async function fetchCampaignBySlug(slug: string): Promise<CampaignWithClips | undefined> {
@@ -81,8 +92,8 @@ export async function fetchCampaignBySlug(slug: string): Promise<CampaignWithCli
     .single();
 
   if (error || !row) {
-    console.error("Failed to fetch campaign by slug, using demo:", error);
-    return DEMO_CAMPAIGNS.find((c) => c.slug === slug);
+    console.error("Failed to fetch campaign by slug:", error);
+    return undefined;
   }
 
   const campaign = mapCampaignRow(row);
@@ -90,7 +101,6 @@ export async function fetchCampaignBySlug(slug: string): Promise<CampaignWithCli
   return { ...campaign, clips };
 }
 
-// Lightweight fetch for metadata (no clips needed)
 export async function fetchCampaignMetaBySlug(slug: string): Promise<Campaign | undefined> {
   const { data: row, error } = await supabase
     .from("campaigns")
@@ -98,11 +108,7 @@ export async function fetchCampaignMetaBySlug(slug: string): Promise<Campaign | 
     .eq("slug", slug)
     .single();
 
-  if (error || !row) {
-    const demo = DEMO_CAMPAIGNS.find((c) => c.slug === slug);
-    return demo ? { ...demo } : undefined;
-  }
-
+  if (error || !row) return undefined;
   return mapCampaignRow(row);
 }
 

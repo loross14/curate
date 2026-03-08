@@ -1,6 +1,7 @@
 "use client";
 
 import { Clip } from "@/lib/clips";
+import { calculateAverageScore, countPlatforms } from "@/lib/utils";
 
 interface SessionSummaryProps {
   shipped: Clip[];
@@ -12,21 +13,10 @@ interface SessionSummaryProps {
 }
 
 export function SessionSummary({ shipped, skipped, campaignName, onNewSession, onBackToCampaign, onBackToDashboard }: SessionSummaryProps) {
-  const avgScore =
-    shipped.length > 0
-      ? shipped.reduce((sum, c) => sum + c.viralityScore, 0) / shipped.length
-      : 0;
-
-  const shipRate = shipped.length + skipped.length > 0
-    ? Math.round((shipped.length / (shipped.length + skipped.length)) * 100)
-    : 0;
-
-  const platformCounts: Record<string, number> = {};
-  shipped.forEach((c) =>
-    c.platforms.forEach((p) => {
-      platformCounts[p] = (platformCounts[p] || 0) + 1;
-    })
-  );
+  const avgScore = calculateAverageScore(shipped);
+  const total = shipped.length + skipped.length;
+  const shipRate = total > 0 ? Math.round((shipped.length / total) * 100) : 0;
+  const platformCounts = countPlatforms(shipped);
 
   return (
     <div className="h-dvh flex flex-col items-center justify-center px-6">

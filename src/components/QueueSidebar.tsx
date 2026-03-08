@@ -1,6 +1,7 @@
 "use client";
 
-import { Clip } from "@/lib/clips";
+import { Clip, getPillarDot } from "@/lib/clips";
+import { calculateAverageScore } from "@/lib/utils";
 import { ScoreRing } from "./ClipCard";
 
 interface QueueSidebarProps {
@@ -11,23 +12,10 @@ interface QueueSidebarProps {
   onJumpTo?: (index: number) => void;
 }
 
-const PILLAR_DOTS: Record<string, string> = {
-  "aged-milk": "bg-red-400",
-  "aged-wine": "bg-emerald-400",
-  "history": "bg-blue-400",
-  "builders": "bg-indigo-400",
-  "time-capsules": "bg-purple-400",
-  "vibe": "bg-amber-400",
-  "marathon": "bg-orange-400",
-  "launch": "bg-cyan-400",
-  "guests": "bg-emerald-400",
-  "community": "bg-pink-400",
-};
-
 export function QueueSidebar({ clips, currentIndex, shipped, skipped, onJumpTo }: QueueSidebarProps) {
   const upcoming = clips.slice(currentIndex + 1);
   const avgShipped = shipped.length > 0
-    ? (shipped.reduce((s, c) => s + c.viralityScore, 0) / shipped.length).toFixed(1)
+    ? calculateAverageScore(shipped).toFixed(1)
     : "—";
 
   return (
@@ -81,7 +69,7 @@ export function QueueSidebar({ clips, currentIndex, shipped, skipped, onJumpTo }
                   i === 0 ? "bg-zinc-800/50 border border-zinc-700/50" : "hover:bg-zinc-800/30 cursor-pointer"
                 }`}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${PILLAR_DOTS[c.type] || "bg-zinc-500"}`} />
+                <div className={`w-1.5 h-1.5 rounded-full ${getPillarDot(c.type)}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-[11px] text-zinc-300 truncate">{c.title}</p>
                   <p className="text-[9px] text-zinc-600">

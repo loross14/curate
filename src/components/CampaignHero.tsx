@@ -1,7 +1,8 @@
 "use client";
 
 import { CampaignWithClips, CampaignStrategy, GuestProfile } from "@/lib/campaigns";
-import { formatPillar, PILLAR_COLORS } from "@/lib/clips";
+import { formatPillar, getPillarCard, STATUS_STYLES } from "@/lib/clips";
+import { calculateAverageScore, groupBy } from "@/lib/utils";
 import { CurateLogo } from "./CurateLogo";
 import { ScoreRing } from "./ClipCard";
 
@@ -19,16 +20,9 @@ const TIER_COLORS: Record<string, string> = {
   C: "bg-zinc-800 text-zinc-500 border-zinc-700",
 };
 
-const pillarCard = (type: string) => PILLAR_COLORS[type]?.card || "bg-zinc-800 text-zinc-400 border-zinc-700";
-
 function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    active: "bg-green-500/15 text-green-400",
-    draft: "bg-zinc-500/15 text-zinc-400",
-    completed: "bg-blue-500/15 text-blue-400",
-  };
   return (
-    <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${styles[status] || styles.draft}`}>
+    <span className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full ${STATUS_STYLES[status] || STATUS_STYLES.draft}`}>
       {status.toUpperCase()}
     </span>
   );
@@ -100,7 +94,7 @@ function ContentPillars({ pillars }: { pillars: CampaignStrategy["pillars"] }) {
       <h3 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">CONTENT PILLARS</h3>
       <div className="grid grid-cols-2 gap-3">
         {pillars.map((p) => (
-          <div key={p.slug} className={`rounded-lg p-3 border ${PILLAR_COLORS[p.slug]?.card || "bg-zinc-800 text-zinc-400 border-zinc-700"}`}>
+          <div key={p.slug} className={`rounded-lg p-3 border ${getPillarCard(p.slug)}`}>
             <div className="flex items-center justify-between mb-1">
               <p className="text-xs font-semibold text-zinc-200">{p.name}</p>
               <span className="text-[9px] text-indigo-400 font-mono">{p.estimatedClips} clips</span>
@@ -190,18 +184,9 @@ function Formats({ formats }: { formats: CampaignStrategy["formats"] }) {
 export function CampaignHero({ campaign, onStartSession, onBack, layout }: CampaignHeroProps) {
   const clips = campaign.clips;
   const strategy = campaign.strategy;
-  const avgScore = clips.length > 0
-    ? clips.reduce((s, c) => s + c.viralityScore, 0) / clips.length : 0;
-
-  const typeBreakdown = clips.reduce((acc, c) => {
-    acc[c.type] = (acc[c.type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const energyBreakdown = clips.reduce((acc, c) => {
-    acc[c.energy] = (acc[c.energy] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const avgScore = calculateAverageScore(clips);
+  const typeBreakdown = groupBy(clips, (c) => c.type);
+  const energyBreakdown = groupBy(clips, (c) => c.energy);
 
   const uniqueGuests = [...new Set(clips.filter((c) => c.guest).map((c) => c.guest!))];
   const uniqueEpisodes = [...new Set(clips.map((c) => c.episodeNumber))];
@@ -281,7 +266,7 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
                     <h3 className="text-xs font-mono text-zinc-500 mb-4 tracking-wider">EXTRACTED CLIP MIX</h3>
                     <div className="grid grid-cols-3 gap-3">
                       {Object.entries(typeBreakdown).sort(([, a], [, b]) => b - a).map(([type, count]) => (
-                        <div key={type} className={`rounded-lg border px-3 py-2.5 ${pillarCard(type)}`}>
+                        <div key={type} className={`rounded-lg border px-3 py-2.5 ${getPillarCard(type)}`}>
                           <p className="text-lg font-bold">{count}</p>
                           <p className="text-[10px] opacity-80">{formatPillar(type)}</p>
                         </div>
@@ -439,7 +424,7 @@ export function CampaignHero({ campaign, onStartSession, onBack, layout }: Campa
             <h3 className="text-[10px] font-mono text-zinc-500 mb-3 tracking-wider">EXTRACTED CLIP MIX</h3>
             <div className="flex flex-wrap gap-2">
               {Object.entries(typeBreakdown).sort(([, a], [, b]) => b - a).map(([type, count]) => (
-                <span key={type} className={`text-[11px] px-2.5 py-1 rounded-lg border ${pillarCard(type)}`}>
+                <span key={type} className={`text-[11px] px-2.5 py-1 rounded-lg border ${getPillarCard(type)}`}>
                   {count} {formatPillar(type)}
                 </span>
               ))}
