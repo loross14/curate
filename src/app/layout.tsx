@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CURATE",
-  description: "Leveraged Creativity",
+  description: "Campaign Creator",
 };
 
 export const viewport: Viewport = {

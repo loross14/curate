@@ -24,7 +24,7 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
         <header className="flex items-center justify-between px-8 pt-6 pb-4 border-b border-[#1a1a1a]">
           <div>
             <h1 className="text-xl font-semibold tracking-tight">CURATE</h1>
-            <p className="text-xs text-zinc-500">Leveraged Creativity</p>
+            <p className="text-xs text-zinc-500">Campaign Creator</p>
           </div>
           <div className="flex items-center gap-3 text-xs font-mono text-zinc-500">
             <span>{campaigns.length} campaigns</span>
@@ -77,7 +77,7 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
     <div className="h-dvh flex flex-col">
       <header className="px-5 pt-6 pb-4">
         <h1 className="text-xl font-semibold tracking-tight">CURATE</h1>
-        <p className="text-xs text-zinc-500">Leveraged Creativity</p>
+        <p className="text-xs text-zinc-500">Campaign Creator</p>
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 pb-8">
