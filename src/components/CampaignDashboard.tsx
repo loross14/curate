@@ -1,10 +1,8 @@
 "use client";
 
 import { CampaignWithClips } from "@/lib/campaigns";
-import { formatPillar, getPillarBadge } from "@/lib/clips";
-import { groupBy } from "@/lib/utils";
+import { useAuth } from "@/lib/AuthContext";
 import { CurateLogo } from "./CurateLogo";
-import { StatusBadge } from "./CampaignHero";
 
 interface CampaignDashboardProps {
   campaigns: CampaignWithClips[];
@@ -13,15 +11,40 @@ interface CampaignDashboardProps {
 }
 
 export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: CampaignDashboardProps) {
+  const { user, signOut } = useAuth();
+
   if (layout === "desktop") {
     return (
       <div className="h-dvh flex flex-col">
         <header className="flex items-center justify-between px-8 pt-6 pb-4 border-b border-[#1a1a1a]">
           <CurateLogo variant="full" size="md" />
-          <div className="flex items-center gap-3 text-xs font-mono text-zinc-500">
-            <span>{campaigns.length} campaigns</span>
-            <span className="text-zinc-700">·</span>
-            <span>{campaigns.reduce((s, c) => s + c.clipCount, 0)} total clips</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 text-xs font-mono text-zinc-500">
+              <span>{campaigns.length} campaigns</span>
+              <span className="text-zinc-700">·</span>
+              <span>{campaigns.reduce((s, c) => s + c.clipCount, 0)} total clips</span>
+            </div>
+            {user && (
+              <div className="flex items-center gap-3 pl-4 border-l border-[#1a1a1a]">
+                {user.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt=""
+                    className="w-6 h-6 rounded-full"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-[10px] font-mono text-zinc-300">
+                    {(user.user_metadata?.name || user.email || "?")[0].toLowerCase()}
+                  </div>
+                )}
+                <button
+                  onClick={signOut}
+                  className="text-[11px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors"
+                >
+                  sign out
+                </button>
+              </div>
+            )}
           </div>
         </header>
 
@@ -54,8 +77,29 @@ export function CampaignDashboard({ campaigns, onSelectCampaign, layout }: Campa
   // Mobile
   return (
     <div className="h-dvh flex flex-col">
-      <header className="px-5 pt-6 pb-4">
+      <header className="flex items-center justify-between px-5 pt-6 pb-4">
         <CurateLogo variant="full" size="sm" />
+        {user && (
+          <div className="flex items-center gap-2">
+            {user.user_metadata?.avatar_url ? (
+              <img
+                src={user.user_metadata.avatar_url}
+                alt=""
+                className="w-6 h-6 rounded-full"
+              />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-[10px] font-mono text-zinc-300">
+                {(user.user_metadata?.name || user.email || "?")[0].toLowerCase()}
+              </div>
+            )}
+            <button
+              onClick={signOut}
+              className="text-[11px] font-mono text-zinc-600 hover:text-zinc-400 transition-colors"
+            >
+              sign out
+            </button>
+          </div>
+        )}
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 pb-8">
@@ -77,63 +121,16 @@ function CampaignCard({
   campaign: CampaignWithClips;
   onSelect: (c: CampaignWithClips) => void;
 }) {
-  const isActive = campaign.status !== "completed" || campaign.clips.length > 0;
-  const typeBreakdown = groupBy(campaign.clips, (c) => c.type);
-
   return (
     <button
       onClick={() => onSelect(campaign)}
-      disabled={!isActive}
-      className={`w-full text-left rounded-xl border transition-all p-5 ${
-        isActive
-          ? "bg-[#141414] border-[#2a2a2a] hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/5 cursor-pointer"
-          : "bg-[#0e0e0e] border-[#1a1a1a] opacity-60 cursor-not-allowed"
-      }`}
+      className="w-full text-left rounded-xl bg-[#141414] border border-[#2a2a2a] hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/5 transition-all p-5 cursor-pointer"
     >
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold tracking-tight truncate text-base">
-              {campaign.name}
-            </h3>
-            <StatusBadge status={campaign.status} />
-          </div>
-          <p className="text-[11px] text-zinc-500 font-mono">{campaign.source}</p>
-        </div>
-      </div>
-
-      <p className="text-xs text-zinc-400 leading-relaxed mb-4 line-clamp-2">{campaign.description}</p>
-
-      <div className="flex items-center gap-4 mb-3 text-xs font-mono">
-        <span className="text-zinc-400">{campaign.clipCount} clips</span>
-        {campaign.reviewedCount > 0 && (
-          <>
-            <span className="text-zinc-700">·</span>
-            <span className="text-green-400">{campaign.shippedCount} shipped</span>
-          </>
-        )}
-      </div>
-
-      {Object.keys(typeBreakdown).length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {Object.entries(typeBreakdown)
-            .sort(([, a], [, b]) => b - a)
-            .slice(0, 5)
-            .map(([type, count]) => (
-              <span key={type} className={`text-[10px] px-2 py-0.5 rounded ${getPillarBadge(type)}`}>
-                {formatPillar(type)} ({count})
-              </span>
-            ))}
-        </div>
-      )}
-
-      <div className="flex flex-wrap gap-1">
-        {campaign.platforms.slice(0, 4).map((p) => (
-          <span key={p} className="text-[10px] text-zinc-600">
-            {p}
-          </span>
-        ))}
-      </div>
+      <h3 className="font-semibold tracking-tight text-base mb-1">
+        {campaign.name}
+      </h3>
+      <p className="text-xs text-zinc-400 leading-relaxed line-clamp-2 mb-4">{campaign.description}</p>
+      <span className="text-xs font-mono text-indigo-400">view campaign →</span>
     </button>
   );
 }

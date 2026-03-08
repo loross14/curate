@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CampaignWithClips } from "@/lib/campaigns";
 import { CampaignHero } from "@/components/CampaignHero";
+import { AuthGuard } from "@/components/AuthGuard";
 import { useLayout } from "@/lib/hooks";
 import { fetchCampaignBySlug } from "@/lib/data";
 
@@ -48,11 +49,13 @@ export default function CampaignPage({ params }: { params: Promise<{ slug: strin
   }
 
   return (
-    <CampaignHero
-      campaign={campaign}
-      onStartSession={() => router.push(`/campaigns/${slug}/review`)}
-      onBack={() => router.push("/")}
-      layout={layout}
-    />
+    <AuthGuard>
+      <CampaignHero
+        campaign={campaign}
+        onStartSession={() => router.push(`/campaigns/${slug}/review`)}
+        onBack={() => router.push("/")}
+        layout={layout}
+      />
+    </AuthGuard>
   );
 }

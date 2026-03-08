@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CampaignWithClips } from "@/lib/campaigns";
 import { CampaignDashboard } from "@/components/CampaignDashboard";
+import { AuthGuard } from "@/components/AuthGuard";
 import { useLayout } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import { fetchCampaigns } from "@/lib/data";
@@ -35,10 +36,12 @@ export default function Home() {
   }
 
   return (
-    <CampaignDashboard
-      campaigns={campaigns}
-      onSelectCampaign={handleSelectCampaign}
-      layout={layout}
-    />
+    <AuthGuard>
+      <CampaignDashboard
+        campaigns={campaigns}
+        onSelectCampaign={handleSelectCampaign}
+        layout={layout}
+      />
+    </AuthGuard>
   );
 }

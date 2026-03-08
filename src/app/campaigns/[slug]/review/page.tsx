@@ -7,11 +7,21 @@ import { ActionBar } from "@/components/ActionBar";
 import { Header } from "@/components/Header";
 import { QueueSidebar } from "@/components/QueueSidebar";
 import { SessionSummary } from "@/components/SessionSummary";
+import { AuthGuard } from "@/components/AuthGuard";
 import { useLayout } from "@/lib/hooks";
 import { useReviewSession } from "@/lib/useReviewSession";
 
 export default function ReviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
+
+  return (
+    <AuthGuard>
+      <ReviewContent slug={slug} />
+    </AuthGuard>
+  );
+}
+
+function ReviewContent({ slug }: { slug: string }) {
   const router = useRouter();
   const layout = useLayout();
   const session = useReviewSession(slug);
