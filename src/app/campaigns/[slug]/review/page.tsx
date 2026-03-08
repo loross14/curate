@@ -3,26 +3,38 @@
 import { use, useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Clip } from "@/lib/clips";
-import { getCampaignBySlug } from "@/lib/campaigns";
+import { CampaignWithClips } from "@/lib/campaigns";
 import { ClipCard, DesktopClipView } from "@/components/ClipCard";
 import { ActionBar } from "@/components/ActionBar";
 import { Header } from "@/components/Header";
 import { QueueSidebar } from "@/components/QueueSidebar";
 import { SessionSummary } from "@/components/SessionSummary";
 import { useLayout } from "@/lib/hooks";
+import { fetchCampaignBySlug } from "@/lib/data";
 
 export default function ReviewPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
   const router = useRouter();
   const layout = useLayout();
-  const campaign = getCampaignBySlug(slug);
 
-  const [clips] = useState<Clip[]>(() => campaign ? [...campaign.clips] : []);
+  const [campaign, setCampaign] = useState<CampaignWithClips | null>(null);
+  const [clips, setClips] = useState<Clip[]>([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null);
   const [shipped, setShipped] = useState<Clip[]>([]);
   const [skipped, setSkipped] = useState<Clip[]>([]);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    fetchCampaignBySlug(slug).then((data) => {
+      if (data) {
+        setCampaign(data);
+        setClips([...data.clips]);
+      }
+      setLoading(false);
+    });
+  }, [slug]);
 
   const currentClip = clips[currentIndex];
   const remaining = clips.length - currentIndex;
@@ -66,7 +78,7 @@ export default function ReviewPage({ params }: { params: Promise<{ slug: string 
 
   // Keyboard controls
   useEffect(() => {
-    if (done) return;
+    if (done || loading) return;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight" || e.key === "l") handleShip();
       if (e.key === "ArrowLeft" || e.key === "h") handleSkip();
@@ -74,20 +86,22 @@ export default function ReviewPage({ params }: { params: Promise<{ slug: string 
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [handleShip, handleSkip, handleBack, done]);
+  }, [handleShip, handleSkip, handleBack, done, loading]);
 
-  if (!campaign) {
-    router.push("/");
-    return null;
+  if (loading) {
+    return (
+      <div className="h-dvh flex items-center justify-center">
+        <p className="text-zinc-500 font-mono text-sm animate-pulse">loading clips…</p>
+      </div>
+    );
   }
 
-  // No clips to review
-  if (clips.length === 0) {
+  if (!campaign || clips.length === 0) {
     router.push(`/campaigns/${slug}`);
     return null;
   }
 
-  // Session complete → summary
+  // Session complete
   if (done) {
     return (
       <SessionSummary
