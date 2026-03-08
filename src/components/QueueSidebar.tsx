@@ -11,13 +11,17 @@ interface QueueSidebarProps {
   onJumpTo?: (index: number) => void;
 }
 
-const TYPE_DOT: Record<string, string> = {
-  hot_take: "bg-red-400",
-  insight: "bg-blue-400",
-  funny: "bg-amber-400",
-  breaking_news: "bg-purple-400",
-  guest_highlight: "bg-emerald-400",
-  education: "bg-cyan-400",
+const PILLAR_DOTS: Record<string, string> = {
+  "aged-milk": "bg-red-400",
+  "aged-wine": "bg-emerald-400",
+  "history": "bg-blue-400",
+  "builders": "bg-indigo-400",
+  "time-capsules": "bg-purple-400",
+  "vibe": "bg-amber-400",
+  "marathon": "bg-orange-400",
+  "launch": "bg-cyan-400",
+  "guests": "bg-emerald-400",
+  "community": "bg-pink-400",
 };
 
 export function QueueSidebar({ clips, currentIndex, shipped, skipped, onJumpTo }: QueueSidebarProps) {
@@ -77,7 +81,7 @@ export function QueueSidebar({ clips, currentIndex, shipped, skipped, onJumpTo }
                   i === 0 ? "bg-zinc-800/50 border border-zinc-700/50" : "hover:bg-zinc-800/30 cursor-pointer"
                 }`}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${TYPE_DOT[c.type]}`} />
+                <div className={`w-1.5 h-1.5 rounded-full ${PILLAR_DOTS[c.type] || "bg-zinc-500"}`} />
                 <div className="flex-1 min-w-0">
                   <p className="text-[11px] text-zinc-300 truncate">{c.title}</p>
                   <p className="text-[9px] text-zinc-600">

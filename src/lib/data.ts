@@ -42,7 +42,7 @@ function mapClipRow(row: Record<string, unknown>, source?: Record<string, unknow
     endSeconds: Number(row.end_seconds) || 0,
     viralityScore: Number(row.virality_score) || 0,
     energy: (row.energy as Clip["energy"]) || "medium",
-    type: (row.type as Clip["type"]) || "insight",
+    type: (row.type as Clip["type"]) || "vibe",
     platforms: (row.platforms as string[]) || [],
     tags: (row.tags as string[]) || [],
     sentiment: (row.sentiment as Clip["sentiment"]) || "neutral",
