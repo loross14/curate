@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CURATE",
-  description: "AI produces. You curate. That's the entire product.",
+  description: "Leveraged Creativity",
 };
 
 export const viewport: Viewport = {
