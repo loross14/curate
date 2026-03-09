@@ -50,22 +50,38 @@ Re-seed: `npx tsx scripts/seed.ts`
 ## Auth (Google OAuth)
 - Code is built: `src/lib/auth.ts`, `src/lib/AuthContext.tsx`, `src/components/AuthGuard.tsx`, `src/app/login/page.tsx`
 - **Currently disabled**: `AUTH_ENABLED = false` in AuthGuard.tsx
-- Google Cloud project created: `curate-app-prod` (project ID)
-- **BLOCKER**: OAuth consent screen must be configured via Google Cloud Console UI (no API for personal accounts)
-- URL: `https://console.cloud.google.com/apis/credentials/consent?project=curate-app-prod`
-- After consent screen: create OAuth client, add redirect URI `https://ovqndmutzpoqysozcwph.supabase.co/auth/v1/callback`
-- Then paste client ID + secret into Supabase Google provider settings
-- Then add `https://curate-xi.vercel.app` and `http://localhost:3000` as redirect URLs in Supabase URL Configuration
-- Flip `AUTH_ENABLED = true` and redeploy
+- Google Cloud project: `curate-app-prod` (created, billing linked to 016F76-9CBD58-ECCA76)
+- gcloud CLI authed as `logancross@live.com` (binary at `/usr/local/share/google-cloud-sdk/bin/gcloud`)
+- Supabase Google provider toggle: ENABLED (but no client ID/secret yet)
+
+### Status: FULLY CONFIGURED AND LIVE
+- Google Cloud project: `curate-app-prod`
+- OAuth client: `1008150246933-9ssurs1lirvrsbpsci3lj1htc9besi9r.apps.googleusercontent.com`
+- Supabase Google provider: configured with client ID + secret
+- Redirect URLs: `https://curate-xi.vercel.app`, `http://localhost:3000`
+- `AUTH_ENABLED = true` in AuthGuard.tsx
+- Creds stored in `.env.local` (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET)
+
+### Agent workflow for console UI steps
+- Copy values to clipboard with `pbcopy`, open windows with `open`
+- Tell Logan to paste + click. Never tell him to "go find" something.
+- **Arc browser issue**: `open` command opens in UMich profile by default. Copy URL to clipboard instead and tell Logan to paste in personal profile.
 
 ## MVP Scope
-Product is a content strategy + campaign management tool, not just a clipping tool. Campaigns contain content deliverables (clips, but extensible to other formats).
+**CURATE IS NOT A CLIPPING PLATFORM.** It's a full-stack marketing campaign tool with content deliverables. Clips are the first deliverable type, but the architecture must support other formats long-term. The content strategy step (Gemini analyzing source material → generating a campaign strategy with pillars, moments, guests) is the key differentiator — not the clip extraction itself.
 
-Build order: auth → persistent decisions → campaign creation → publish queue → taste profiles
+### Pipeline vision (high-level, needs scoping + diagramming next session)
+1. **Source intake**: paste URL (YouTube, Twitch, X, upload)
+2. **Content strategy**: Gemini analyzes source → generates strategy (pillars, moments, guests, yield estimates, formats) — this is already modeled in the `strategy` JSONB column
+3. **Extraction**: Gemini extracts content deliverables guided by the strategy
+4. **Curation**: swipe review (ship/skip) — BUILT
+5. **Publishing**: tracking + export — TODO
 
-- **Auth**: Google OAuth (code done, config pending)
-- **Decisions**: ship/skip saved to Supabase `decisions` table per session
-- **Campaign creation**: paste URL → Gemini extracts → review/edit before adding
+Build order: ~~auth~~ → ~~decisions~~ → campaign creation pipeline → publish queue → taste profiles
+
+- **Auth**: LIVE (Google OAuth via Supabase)
+- **Decisions**: LIVE (ship/skip saved to Supabase)
+- **Campaign creation**: NEXT — needs high-level scoping + pipeline diagramming before any code. Start with alignment on mechanisms, not implementation.
 - **Publish queue**: tracking + export (CSV/JSON), no API integrations
 - **Taste profiles**: per existing schema
 
