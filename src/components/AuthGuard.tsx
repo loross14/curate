@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
 
 // AUTH_ENABLED: flip to true once Google OAuth is configured in Supabase + Google Cloud Console
-const AUTH_ENABLED = false;
+const AUTH_ENABLED = true;
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
